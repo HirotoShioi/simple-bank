@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:12
+    container_name: bank-db
+    environment: 
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: secret
+    ports: 
+      - "5433:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/initdb.d:/docker-entrypoint-initdb.d
+
+  pgadmin:
+    image: dpage/pgadmin4:6.11
+    container_name: pgadmin
+    ports:
+      - 8080:80
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: example@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
+    depends_on:
+      - db
+
+volumes:
+  db:
+    name: pg
+  pgadmin:
+    name: vpga
