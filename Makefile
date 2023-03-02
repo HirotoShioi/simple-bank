@@ -7,10 +7,18 @@ start:
 stop:
 	docker compose down
 migrateup:
-	migrate -path db/migration/ -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up
+	docker run --rm \
+	-v ${PWD}/db/migration:/migrations \
+	--network host \
+	migrate/migrate -path=/migrations/ -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose up
 migratedown:
-	migrate -path db/migration/ -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
+	docker run --rm \
+	-v ${PWD}/db/migration:/migrations \
+	--network host \
+	migrate/migrate -path=/migrations/ -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
 sqlc:
-	rm -rf ./db/sqlc && sqlc generate
+	docker run --rm -v ${PWD}:/src -w /src kjconroy/sqlc generate
+test:
+	go test -v -cover ./...
 
-.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc
+.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test
