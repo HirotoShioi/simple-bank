@@ -1,3 +1,5 @@
+.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test
+
 createdb:
 	docker exec -it postgres12 createdb --username=root --owner=root simple_bank
 dropdb:
@@ -20,5 +22,3 @@ sqlc:
 	docker run --rm -v ${PWD}:/src -w /src kjconroy/sqlc generate
 test:
 	go test -v -cover ./...
-
-.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test
