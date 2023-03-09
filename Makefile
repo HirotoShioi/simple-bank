@@ -1,4 +1,4 @@
-.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test server
+.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test server mock
 
 createdb:
 	docker exec -it postgres12 createdb --username=root --owner=root simple_bank
@@ -20,6 +20,9 @@ migratedown:
 	migrate/migrate -path=/migrations/ -database "postgresql://root:secret@localhost:5432/simple_bank?sslmode=disable" -verbose down
 sqlc:
 	docker run --rm -v ${PWD}:/src -w /src kjconroy/sqlc generate
+
+mock:
+	mockgen -build_flags=--mod=mod -package mockdb -destination db/mock/store.go github.com/HirotoShioi/simplebank/db/sqlc Store
 test:
 	go test -v -cover ./...
 server:
