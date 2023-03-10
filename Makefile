@@ -1,4 +1,4 @@
-.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test server mock
+.PHONY: createdb dropdb postgres start stop migrateup migratedown sqlc test server mock clean
 
 createdb:
 	docker exec -it postgres12 createdb --username=root --owner=root simple_bank
@@ -6,6 +6,10 @@ dropdb:
 	docker exec -it postgres12 dropdb simple_bank
 start:
 	docker compose up -d
+
+clean:
+	docker compose down -v && rm -rf docker
+
 stop:
 	docker compose down
 migrateup:
@@ -23,7 +27,9 @@ sqlc:
 
 mock:
 	mockgen -build_flags=--mod=mod -package mockdb -destination db/mock/store.go github.com/HirotoShioi/simplebank/db/sqlc Store
+
 test:
 	go test -v -cover ./...
+
 server:
 	go run main.go
